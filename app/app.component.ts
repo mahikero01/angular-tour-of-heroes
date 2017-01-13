@@ -12,7 +12,9 @@ import { Component } from '@angular/core';
       </div>
     </div>  
     <ul class="heroes">
-      <li *ngFor="let hero of heroes" (click)="onSelect(hero)">
+      <li *ngFor="let hero of heroes" 
+        [class.selected] = "hero === selectedHero"
+        (click)="onSelect(hero)">
         <span class="badge">{{hero.id}}</span> {{hero.name}}
       </li>
     </ul>
@@ -71,15 +73,18 @@ export class AppComponent  {
   title = 'Tour of Heroes';
   selectedHero: Hero;
   heroes = HEROES;
+
   onSelect(hero: Hero): void {
     this.selectedHero = hero;
   };
+  
 }
 
 export class Hero {
   id: number;
   name: string;
 }
+
 
 const HEROES: Hero[] = [
     {id: 11, name: 'Mr. Nice'},
