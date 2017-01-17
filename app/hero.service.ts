@@ -10,6 +10,7 @@ import { Hero } from './hero';
 @Injectable()
 export class HeroService {
 
+  private headers = new Headers({'Content-Type': 'application/json'});
   private heroesUrl = 'api/heroes';  // URL to web api
 
   constructor(private http: Http) { }
@@ -33,9 +34,26 @@ export class HeroService {
     });
   }
 
+  // getHero(id: number): Promise<Hero> {
+  //   return this.getHeroes()
+  //            .then(heroes => heroes.find(hero => hero.id === id));
+  // }
+
   getHero(id: number): Promise<Hero> {
-    return this.getHeroes()
-             .then(heroes => heroes.find(hero => hero.id === id));
+    const url = `${this.heroesUrl}/${id}`;
+    return this.http.get(url)
+      .toPromise()
+      .then(response => response.json().data as Hero)
+      .catch(this.handleError);
+  }
+
+  update(hero: Hero): Promise<Hero> {
+    const url = `${this.heroesUrl}/${hero.id}`;
+    return this.http
+      .put(url, JSON.stringify(hero), {headers: this.headers})
+      .toPromise()
+      .then(() => hero)
+      .catch(this.handleError);
   }
 
   private handleError(error: any): Promise<any> {

@@ -15,6 +15,7 @@ require('rxjs/add/operator/toPromise');
 var HeroService = (function () {
     function HeroService(http) {
         this.http = http;
+        this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.heroesUrl = 'api/heroes'; // URL to web api
     }
     /*getHeroes(): Promise<Hero[]> {
@@ -34,9 +35,24 @@ var HeroService = (function () {
             setTimeout(function () { return resolve(_this.getHeroes()); }, 2000);
         });
     };
+    // getHero(id: number): Promise<Hero> {
+    //   return this.getHeroes()
+    //            .then(heroes => heroes.find(hero => hero.id === id));
+    // }
     HeroService.prototype.getHero = function (id) {
-        return this.getHeroes()
-            .then(function (heroes) { return heroes.find(function (hero) { return hero.id === id; }); });
+        var url = this.heroesUrl + "/" + id;
+        return this.http.get(url)
+            .toPromise()
+            .then(function (response) { return response.json().data; })
+            .catch(this.handleError);
+    };
+    HeroService.prototype.update = function (hero) {
+        var url = this.heroesUrl + "/" + hero.id;
+        return this.http
+            .put(url, JSON.stringify(hero), { headers: this.headers })
+            .toPromise()
+            .then(function () { return hero; })
+            .catch(this.handleError);
     };
     HeroService.prototype.handleError = function (error) {
         console.error('An error occurred', error); // for demo purposes only
